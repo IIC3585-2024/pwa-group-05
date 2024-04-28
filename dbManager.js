@@ -1,35 +1,36 @@
 import { v4 as uuidv4 } from "uuid";
 
-let db;
-function openDB() {
-  const request = indexedDB.open("NotepadApp", 1);
+async function openDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open("NotepadApp", 1);
 
-  request.onupgradeneeded = function (event) {
-    db = event.target.result;
+    request.onupgradeneeded = function (event) {
+      const db = event.target.result;
 
-    if (!db.objectStoreNames.contains("notepads")) {
-      const notepadOS = db.createObjectStore("notepads", { keyPath: "id" });
-      notepadOS.createIndex("name", "name", { unique: true });
-    }
+      if (!db.objectStoreNames.contains("notepads")) {
+        const notepadOS = db.createObjectStore("notepads", { keyPath: "id" });
+        notepadOS.createIndex("name", "name", { unique: true });
+      }
 
-    if (!db.objectStoreNames.contains("notes")) {
-      const noteOS = db.createObjectStore("notes", { keyPath: "id" });
-      noteOS.createIndex("notepadId", "notepadId", { unique: false });
-      noteOS.createIndex("checked", "checked", { unique: false });
-    }
-  };
+      if (!db.objectStoreNames.contains("notes")) {
+        const noteOS = db.createObjectStore("notes", { keyPath: "id" });
+        noteOS.createIndex("notepadId", "notepadId", { unique: false });
+        noteOS.createIndex("checked", "checked", { unique: false });
+      }
+    };
 
-  request.onsuccess = function (event) {
-    db = event.target.result;
-    console.log("Database initialized");
-  };
+    request.onsuccess = function (event) {
+      const db = event.target.result;
+      resolve(db);
+    };
 
-  request.onerror = function (event) {
-    console.error("Database error:", event.target.errorCode);
-  };
+    request.onerror = function (event) {
+      reject(event.target.errorCode);
+    };
+  });
 }
 
-function createNotepad(name) {
+function createNotepad(db, name) {
   const transaction = db.transaction(["notepads"], "readwrite");
   const store = transaction.objectStore("notepads");
   const uuid = uuidv4();
@@ -38,7 +39,7 @@ function createNotepad(name) {
   return uuid;
 }
 
-function createNote(notepadId, content) {
+function createNote(db, notepadId, content) {
   const transaction = db.transaction(["notes"], "readwrite");
   const store = transaction.objectStore("notes");
   const uuid = uuidv4();
@@ -53,8 +54,7 @@ function createNote(notepadId, content) {
   store.add(note);
   return uuid;
 }
-
-function getNotepad(id) {
+async function getNotepad(db, id) {
   return new Promise((resolve, reject) => {
     const transaction = db.transaction(["notepads", "notes"], "readonly");
     const notepadStore = transaction.objectStore("notepads");
@@ -87,7 +87,7 @@ function getNotepad(id) {
   });
 }
 
-function updateNote(note) {
+async function updateNote(db, note) {
   const transaction = db.transaction(["notes"], "readwrite");
   const store = transaction.objectStore("notes");
   store.put(note);

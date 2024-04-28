@@ -1,9 +1,9 @@
-import { openDB, getNotepad, updateNote } from "../dbManager.js";
+import { openDB, getNotepad, updateNote, createNote } from "../dbManager.js";
+import { navigate } from "../router.js";
 
-export default async function (params) {
-  const notepadId = params[0];
-  await openDB();
-  let notepad = await getNotepad(notepadId);
+export default async function (notepadId) {
+  const db = await openDB();
+  let notepad = await getNotepad(db, notepadId);
 
   if (notepad) {
     const renderNotes = (notes) => {
@@ -34,6 +34,10 @@ export default async function (params) {
           createdAt: new Date().toISOString(),
         };
         notepad.notes.push(newNote);
+        if (noteContent) {
+          await createNote(db, notepadId, noteContent);
+          navigate(`/notepads/${notepadId}`);
+        }
         document.getElementById("note-content").value = "";
         applyFiltersAndSorting();
       }
@@ -74,11 +78,12 @@ export default async function (params) {
       const noteId = event.target.dataset.noteId;
       const note = notepad.notes.find((note) => note.id === noteId);
       note.checked = event.target.checked;
-      await updateNote(note);
+      await updateNote(db, note);
       applyFiltersAndSorting();
     };
 
     const attachEventListeners = () => {
+      applyFiltersAndSorting();
       document
         .getElementById("create-note")
         .addEventListener("click", handleCreateNote);
@@ -88,11 +93,13 @@ export default async function (params) {
       document
         .getElementById("filter-select")
         .addEventListener("change", handleFilterNotes);
-      document.getElementById("notes-list").addEventListener("change", (event) => {
-        if (event.target.matches(".note-checkbox")) {
-          handleNoteCheckboxChange(event);
-        }
-      });
+      document
+        .getElementById("notes-list")
+        .addEventListener("change", (event) => {
+          if (event.target.matches(".note-checkbox")) {
+            handleNoteCheckboxChange(event);
+          }
+        });
     };
 
     const html = `
@@ -118,8 +125,8 @@ export default async function (params) {
           id="sort-select"
           class="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          <option value="asc">Ascending</option>
-          <option value="desc">Descending</option>
+        <option value="desc">Descending</option>
+        <option value="asc">Ascending</option>
         </select>
         <label for="filter-select" class="ml-4 mr-2">Filter by:</label>
         <select
@@ -140,17 +147,17 @@ export default async function (params) {
     </div>
   `;
 
-  setTimeout(() => {
-    attachEventListeners();
-  }, 0);
+    setTimeout(() => {
+      attachEventListeners();
+    });
 
-  return html;
-} else {
-  return `
+    return html;
+  } else {
+    return `
     <div class="container mx-auto px-4 py-8">
       <h1 class="text-4xl font-bold mb-4">Notepad not found</h1>
       <p class="text-xl text-gray-600">The requested notepad with ID ${notepadId} does not exist.</p>
     </div>
   `;
-}
+  }
 }

@@ -1,65 +1,48 @@
+import HomePage from './pages/home.js';
+import AboutPage from './pages/about.js';
+import ContactPage from './pages/contact.js';
+import NotFoundPage from './pages/404.js';
+import NotepadPage from './pages/notepad.js';
+
 const routes = {
-  '/': './pages/index.js',
-  '/notepads/:id': './pages/notepad.js',
-  '*': './pages/404.js'
+  "/": HomePage,
+  "/about": AboutPage,
+  "/contact": ContactPage,
+  "/notepads/:id": NotepadPage,
+  "/404": NotFoundPage,
 };
 
-function router() {
+function navigate(path) {
+  window.history.pushState({}, path, window.location.origin + path);
+  updateContent();
+}
+
+async function updateContent() {
   const path = window.location.pathname;
-  for (const route in routes) {
-    if (route === '*') continue;
-    
-    const regex = new RegExp(`^${route.replace(/:\w+/g, "([^/]+)")}$`);
-    const match = path.match(regex);
+  const parts = path.split("/");
 
-    if (match) {
-      const params = match.slice(1);
-      const templateUrl = routes[route];
-      loadTemplate(templateUrl, [...params]);
-      updateBrowserHistory(route, params);
-      return;
-    }
-  }
-
-  loadTemplate(routes['*']);
-  updateBrowserHistory('/404');
-}
-
-async function loadTemplate(templateUrl, params = []) {
-  try {
-    const module = await import(templateUrl);
-    const template = module.default;
-    const htmlPromise = template(params);
-    const html = await htmlPromise;
-    document.getElementById('app').innerHTML = html;
-  } catch (error) {
-    console.error('Error loading template:', error);
+  if (parts[1] === "notepads" && parts.length === 3) {
+    const notepadId = parts[2];
+    const component = await routes["/notepads/:id"](notepadId);
+    document.getElementById("app").innerHTML = component;
+  } else {
+    const route = routes[path] || routes["/404"];
+    const component = await route();
+    document.getElementById("app").innerHTML = component;
   }
 }
 
+async function handleInitialLoad() {
+  const path = window.location.pathname;
+  const parts = path.split("/");
 
-
-function updateBrowserHistory(route, params = []) {
-  const url = route.replace(/:\w+/g, () => params.shift());
-  window.history.pushState({}, '', url);
+  if (parts[1] === "notepads" && parts.length === 3) {
+    await updateContent();
+  }
 }
 
-window.addEventListener("popstate", router);
+window.onpopstate = async () => await updateContent();
+window.addEventListener('DOMContentLoaded', handleInitialLoad);
 
-document.addEventListener("DOMContentLoaded", () => {
-  document.body.addEventListener("click", (e) => {
-    if (e.target.matches("[data-link]")) {
-      e.preventDefault();
-      navigateTo(e.target.href);
-    }
-  });
 
-  router();
-});
-
-export function navigateTo(url) {
-  window.history.pushState({}, "", url);
-  router();
-}
-
-export default router;
+export { navigate, updateContent };
