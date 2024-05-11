@@ -1,14 +1,14 @@
 const HomePage = () => `
 <header class="bg-slate-800 py-4">
-  <div class="container mx-auto flex items-center">
+  <div class="container px-10 flex items-center h-15">
     <img src="../images/anon_notepad.png" alt="Notepad" class="w-16 h-16 mr-4" />
-    <h1 class="text-white text-3xl font-bold">EchoPad</h1>
+    <h1 class="text-white text-lg text-3xl font-bold">EchoPad</h1>
   </div>
 </header>
 <div class="container mx-auto py-8">
   <div class="flex flex-col md:flex-row items-center">
-    <div class="md:w-1/2 md:pr-8">
-      <h2 class="text-7xl font-bold mb-4">Create a New Notepad</h2>
+    <div class="md:w-1/2 md:pr-8 md:ml-6">
+      <h2 class="text-3xl md:text-7xl sm:text-5xl font-bold mb-4 max-sm:mx-1">Create a New Notepad</h2>
       <div class="mb-4">
         <input
           type="text"
@@ -23,10 +23,10 @@ const HomePage = () => `
       >
         Create Notepad
       </button>
-      <p class="mt-4 text-gray-600">Type a new or existing notepad name</p>
+      <p class="mt-4 text-gray-600 max-md:text-center">Type a new or existing notepad name</p>
     </div>
-    <div class="md:w-1/2 mt-8 md:mt-0">
-      <img src="../images/person.png" alt="Person" class="w-full max-w-md mx-auto" />
+    <div class="w-72 md:w-1/2 max-md:mt-8 md:mr-4">
+      <img src="../images/person.png" alt="Person" class="w-full max-w-md ml-auto" />
     </div>
   </div>
 </div>
