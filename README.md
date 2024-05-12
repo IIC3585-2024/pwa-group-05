@@ -45,6 +45,7 @@ curl --header "Authorization: key=$api_key" \
         }'
 ```
 
+To receive a notification, you can press the button "Send Notification" in the app.
 
 ## Contributors
 
