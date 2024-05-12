@@ -1,6 +1,4 @@
 import { v4 as uuidv4 } from "uuid";
-import { token } from "./firebase";
-import { sendNotification } from "./public/notification";
 
 async function openDB() {
   return new Promise((resolve, reject) => {
@@ -60,10 +58,6 @@ async function createNotepad(db, name) {
   const uuid = uuidv4();
   const notepad = { id: uuid, name: name };
   store.add(notepad);
-
-  if (token) {
-    sendNotification(token)
-  }
   return uuid;
 }
 
@@ -82,7 +76,6 @@ function createNote(db, notepadId, content) {
   store.add(note);
   return uuid;
 }
-
 async function getNotepad(db, id) {
   return new Promise((resolve, reject) => {
     const transaction = db.transaction(["notepads", "notes"], "readonly");

@@ -1,4 +1,4 @@
-import { openDB, createNotepad } from "./dbManager.js";
+import { openDB, createNotepad, createNote } from "./dbManager.js";
 import { navigate } from "./router.js";
 
 document.addEventListener("DOMContentLoaded", async () => {

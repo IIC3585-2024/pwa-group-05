@@ -2,7 +2,7 @@
 // See: https://firebase.google.com/docs/web/learn-more#config-object
 // https://firebase.google.com/docs/web/setup#available-libraries
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js"
+import { initializeApp} from "https://www.gstatic.com/firebasejs/10.11.1/firebase-app.js"
 import {
   getMessaging,
   getToken,
@@ -19,11 +19,9 @@ const firebaseConfig = {
   appId: "1:976983505081:web:7dea36d79bed8769010368",
 };
 
-let token = null;
-
 const setupFireBase = () => {
     const app = initializeApp(firebaseConfig);
-    const messaging = getMessaging(app);
+    const messaging = getMessaging(app)
     
     getToken(messaging, {
       vapidKey:
@@ -32,7 +30,8 @@ const setupFireBase = () => {
       .then((currentToken) => {
         console.log("Token received: \n", currentToken);
         if (currentToken) {
-          token = currentToken;
+          // Send the token to your server and update the UI if necessary
+          // ...
         } else {
           // Show permission request UI
           console.log(
@@ -46,14 +45,15 @@ const setupFireBase = () => {
         // ...
       });
 
-    onMessage(messaging, (payload) => {
-      console.log("Message received. \n", payload);
-      new Notification(payload.notification.title, {
-        body: payload.notification.body,
-        // icon: payload.notification.icon,
+      onMessage(messaging, (payload) => {
+        console.log("Message received. \n", payload);
+        new Notification(payload.notification.title, {
+          body: payload.notification.body,
+          // icon: payload.notification.icon,
+        });
+
+        // ...
       });
-      // ...
-    });
 
 }
 
@@ -64,4 +64,4 @@ const requestNotificationPermission = async () => {
   }
 };
 
-export { setupFireBase, requestNotificationPermission, token };
+export { setupFireBase, requestNotificationPermission };
