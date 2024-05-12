@@ -1,6 +1,6 @@
 import { AwsClient } from 'aws4fetch';
 
-async function sendNotification(token) {
+async function sendNotification(token, title, message) {
     console.log("Sending notification to AWS Lambda function");
 
     const accessKeyId = import.meta.env.VITE_AWS_ACCESS_KEY_ID;
@@ -10,7 +10,7 @@ async function sendNotification(token) {
     const client = new AwsClient({ accessKeyId, secretAccessKey, region });
 
     const url = 'https://grg2xak4za4nayd6rcrzu2bvay0bvdwd.lambda-url.us-east-1.on.aws/';
-    const body = JSON.stringify({ "token": token });
+    const body = JSON.stringify({ "token": token, "title": title, "message": message});
 
     try {
         const response = await client.fetch(url, {

@@ -19,6 +19,8 @@ const firebaseConfig = {
   appId: "1:976983505081:web:7dea36d79bed8769010368",
 };
 
+let token = null;
+
 const setupFireBase = () => {
     const app = initializeApp(firebaseConfig);
     const messaging = getMessaging(app)
@@ -30,8 +32,7 @@ const setupFireBase = () => {
       .then((currentToken) => {
         console.log("Token received: \n", currentToken);
         if (currentToken) {
-          // Send the token to your server and update the UI if necessary
-          // ...
+          token = currentToken;
         } else {
           // Show permission request UI
           console.log(
@@ -64,4 +65,4 @@ const requestNotificationPermission = async () => {
   }
 };
 
-export { setupFireBase, requestNotificationPermission };
+export { setupFireBase, requestNotificationPermission, token };

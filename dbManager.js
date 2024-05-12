@@ -1,4 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
+import { token } from "./firebase";
+import { sendNotification } from "./public/notification";
 
 async function openDB() {
   return new Promise((resolve, reject) => {
@@ -58,6 +60,9 @@ async function createNotepad(db, name) {
   const uuid = uuidv4();
   const notepad = { id: uuid, name: name };
   store.add(notepad);
+  if (token) {
+    sendNotification(token, "Notepad created", `Notepad ${name} created`);
+  }
   return uuid;
 }
 

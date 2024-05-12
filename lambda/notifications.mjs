@@ -2,13 +2,14 @@ export const handler = async (event) => {
   let body = JSON.parse(event.body);
   let key = process.env.SERVER_KEY;
   let to = body["token"];
+  let title = body["title"];
+  let message = body["message"];
 
   let notification = {
-    title: "A New Notification!",
-    body: "Hello World!",
+    title: title,
+    body: message,
     click_action: "https://echopad.netlify.app/",
   };
-  /*global fetch */
 
   try {
     const fetchResponse = await fetch("https://fcm.googleapis.com/fcm/send", {
@@ -23,9 +24,25 @@ export const handler = async (event) => {
       }),
     });
 
-    return fetchResponse;
+    const responseJson = await fetchResponse.json();
+
+    return {
+      statusCode: 200,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Allow-Methods": "OPTIONS, POST",
+      },
+      body: JSON.stringify(responseJson),
+    };
   } catch (error) {
     console.error(error);
-    return "error";
+    return {
+      statusCode: 500,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+      },
+      body: "Internal Server Error",
+    };
   }
 };

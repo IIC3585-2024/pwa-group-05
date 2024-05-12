@@ -24,6 +24,10 @@ export default async function (notepadId) {
         .join("");
     };
 
+    const backToHome = () => {
+      navigate("/");
+    }
+
     const handleCreateNote = async () => {
       const noteContent = document.getElementById("note-content").value;
       if (noteContent.trim() !== "") {
@@ -88,6 +92,9 @@ export default async function (notepadId) {
         .getElementById("create-note")
         .addEventListener("click", handleCreateNote);
       document
+        .getElementById("back-to-home")
+        .addEventListener("click", backToHome);
+      document
         .getElementById("sort-select")
         .addEventListener("change", handleSortNotes);
       document
@@ -103,9 +110,12 @@ export default async function (notepadId) {
     };
 
     const html = `
-      <div class="container mx-auto px-4 py-8">
+    <div class="container mx-auto px-4 py-8">
+    <div class="flex justify-between flex-1 mb-4">
+        <button type="button" id="back-to-home" class="relative inline-flex items-center px-2 py-2 text-sm 5xl:text-xl font-medium text-gray-700 bg-white border border-gray-300 rounded-md sm:rounded-none hover:bg-gray-50 opacity-50" data-id="pagination-prev"><svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 20 20" class="w-5 h-5" aria-hidden="true" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>Back</button>
+    </div>
       <h1 class="text-4xl font-bold mb-4">${notepad.name}</h1>
-      <div class="mb-8 flex">
+      <div class="mb-8 flex max-md:text-sm md:text-xl">
         <input
           type="text"
           id="note-content"
@@ -119,14 +129,14 @@ export default async function (notepadId) {
           Create Note
         </button>
       </div>
-      <div class="mb-4 flex items-center">
+      <div class="mb-4 flex items-center max-sm:justify-center text-xl max-sm:text-sm">
         <label for="sort-select" class="mr-2">Sort by:</label>
         <select
           id="sort-select"
           class="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-        <option value="desc">Descending</option>
-        <option value="asc">Ascending</option>
+          <option value="desc">Descending</option>
+          <option value="asc">Ascending</option>
         </select>
         <label for="filter-select" class="ml-4 mr-2">Filter by:</label>
         <select
@@ -138,7 +148,7 @@ export default async function (notepadId) {
           <option value="unchecked">Unchecked</option>
         </select>
       </div>
-      <div class="bg-white shadow-md rounded-md p-4">
+      <div class="bg-white shadow-md rounded-md p-4 text-xl">
         <h2 class="text-2xl font-semibold mb-4">Notes:</h2>
         <ul id="notes-list" class="space-y-4">
           ${renderNotes(notepad.notes)}
@@ -146,10 +156,11 @@ export default async function (notepadId) {
       </div>
     </div>
   `;
-
-    setTimeout(() => {
-      attachEventListeners();
-    });
+  
+  setTimeout(() => {
+    attachEventListeners();
+  });
+  
 
     return html;
   } else {
