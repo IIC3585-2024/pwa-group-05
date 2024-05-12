@@ -6,9 +6,11 @@ async function sendNotification(token, title, message) {
     const accessKeyId = import.meta.env.VITE_AWS_ACCESS_KEY_ID;
     const secretAccessKey = import.meta.env.VITE_AWS_SECRET_ACCESS_KEY;
     const region = import.meta.env.VITE_REGION;
+
     const service = import.meta.env.VITE_SERVICE;
 
     const client = new AwsClient({ accessKeyId, secretAccessKey, region, service });
+
 
     const url = 'https://grg2xak4za4nayd6rcrzu2bvay0bvdwd.lambda-url.us-east-1.on.aws/';
     const body = JSON.stringify({ "token": token, "title": title, "message": message});
