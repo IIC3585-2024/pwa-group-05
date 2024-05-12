@@ -7,6 +7,6 @@ import './ui.js';
 
 registerServiceWorker();
 
+setupFireBase();
 updateContent();
 requestNotificationPermission();
-setupFireBase();

@@ -10,12 +10,10 @@ workbox.routing.registerRoute(
     new workbox.strategies.NetworkFirst()
 );
 
-
 workbox.routing.registerRoute(
   ({ request }) => request.destination === "script",
   new workbox.strategies.StaleWhileRevalidate()
 );
-
 
 workbox.routing.registerRoute(
     ({ request }) => request.destination === "font",
