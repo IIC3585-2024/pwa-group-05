@@ -1,4 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
+import { token } from "./firebase";
+import { sendNotification } from "./public/notification";
 
 async function openDB() {
   return new Promise((resolve, reject) => {
@@ -30,12 +32,37 @@ async function openDB() {
   });
 }
 
-function createNotepad(db, name) {
+
+async function checkExistNotepad(db, name){
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction(["notepads"], "readonly");
+    const store = transaction.objectStore("notepads");
+    const index = store.index("name");
+    const request = index.get(name);
+    request.onsuccess = function(event){
+      resolve(event.target.result);
+    }
+    request.onerror = function(event){
+      reject(event.target.error);
+    }
+  });
+}
+
+async function createNotepad(db, name) {
+  // check if the notepad name already exists
+  const existNotepad = await checkExistNotepad(db, name);
+  if(existNotepad){
+    return existNotepad.id;
+  }
+
   const transaction = db.transaction(["notepads"], "readwrite");
   const store = transaction.objectStore("notepads");
   const uuid = uuidv4();
   const notepad = { id: uuid, name: name };
   store.add(notepad);
+  if (token) {
+    sendNotification(token, "Notepad created", `Notepad ${name} created`);
+  }
   return uuid;
 }
 
